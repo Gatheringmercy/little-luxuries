@@ -1,0 +1,15 @@
+{
+ "total": 105,
+ "by_dept": {
+  "Electronics & Gadgets": 10,
+  "Clothing": 25,
+  "Christmas Gifts": 25,
+  "Jewelry": 17,
+  "Home Gifts": 11,
+  "Shoes & Slippers": 7,
+  "Kids & Toys": 5,
+  "Pajamas & Loungewear": 5
+ },
+ "has_pic": 2,
+ "us_warehouse": 68
+}
