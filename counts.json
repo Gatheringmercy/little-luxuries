@@ -1,5 +1,5 @@
 {
- "total": 772,
+ "total": 783,
  "by_dept": {
   "Accessories": 150,
   "Bath, Body & Massage": 12,
@@ -13,10 +13,10 @@
   "Jewelry": 216,
   "Pajamas & Loungewear": 8,
   "Shoes & Slippers": 7,
-  "Kitchen": 42
+  "Kitchen": 53
  },
  "has_pic": 449,
- "us_warehouse": 238,
+ "us_warehouse": 249,
  "discount": 235,
- "note": "730 items: 618 as of Nov 23 + 119 women's clothing added 2026-11-23 (31 jeans, 15 bling jeans, 43 shirts, 30 denim shorts; 15 bling cards skipped as duplicate SKUs of jeans cards) - 7 Kids & Toys items removed 2026-11-23 (kids clothing goes only to Precious Threads). New clothing priced by cost band, all price_status to_verify; no hosted CJ image URL on file yet for the new clothing - cards show the supplier-page placeholder until images are pulled. CJ prices set at listed cost x 1.5 retail; CJ costs still to verify against live CJ. Checkout wired (Stripe single checkout). + 23 pots & frying pans added 2026-11-23 (18 cards, Kitchen dept, all price_status to_verify; no hosted CJ image URL on file yet for the new kitchen items - cards show the supplier-page placeholder until images are pulled). + 19 frying pans & saucepans added 2026-11-23 (9 cards, run #20, Kitchen dept, all price_status to_verify; no hosted CJ image URL on file yet for the new kitchen items - cards show the supplier-page placeholder until images are pulled). Saucepans gap filled (5 SKUs); no frying pans or sets survived this pass."
+ "note": "730 items: 618 as of Nov 23 + 119 women's clothing added 2026-11-23 (31 jeans, 15 bling jeans, 43 shirts, 30 denim shorts; 15 bling cards skipped as duplicate SKUs of jeans cards) - 7 Kids & Toys items removed 2026-11-23 (kids clothing goes only to Precious Threads). New clothing priced by cost band, all price_status to_verify; no hosted CJ image URL on file yet for the new clothing - cards show the supplier-page placeholder until images are pulled. CJ prices set at listed cost x 1.5 retail; CJ costs still to verify against live CJ. Checkout wired (Stripe single checkout). + 23 pots & frying pans added 2026-11-23 (18 cards, Kitchen dept, all price_status to_verify; no hosted CJ image URL on file yet for the new kitchen items - cards show the supplier-page placeholder until images are pulled). + 19 frying pans & saucepans added 2026-11-23 (9 cards, run #20, Kitchen dept, all price_status to_verify; no hosted CJ image URL on file yet for the new kitchen items - cards show the supplier-page placeholder until images are pulled). Saucepans gap filled (5 SKUs); no frying pans or sets survived this pass. + 11 roasters added 2026-11-23 (6 cards, run #22, Kitchen dept, cats Roaster Ovens + Roasting Pans, all price_status to_verify; no hosted CJ image URL on file yet for the new kitchen items - cards show the supplier-page placeholder until images are pulled)."
 }
