@@ -1,21 +1,22 @@
 {
-  "total": 730,
-  "by_dept": {
-    "Accessories": 150,
-    "Bath, Body & Massage": 12,
-    "Candles": 10,
-    "Christmas Gifts": 101,
-    "Clothing": 144,
-    "Electronics & Gadgets": 10,
-    "For Men": 8,
-    "Home & Comfort": 52,
-    "Home Gifts": 12,
-    "Jewelry": 216,
-    "Pajamas & Loungewear": 8,
-    "Shoes & Slippers": 7
-  },
-  "has_pic": 449,
-  "us_warehouse": 196,
-  "discount": 235,
-  "note": "730 items: 618 as of Nov 23 + 119 women's clothing added 2026-11-23 (31 jeans, 15 bling jeans, 43 shirts, 30 denim shorts; 15 bling cards skipped as duplicate SKUs of jeans cards) - 7 Kids & Toys items removed 2026-11-23 (kids clothing goes only to Precious Threads). New clothing priced by cost band, all price_status to_verify; no hosted CJ image URL on file yet for the new clothing - cards show the supplier-page placeholder until images are pulled. CJ prices set at listed cost x 1.5 retail; CJ costs still to verify against live CJ. Checkout wired (Stripe single checkout)."
+ "total": 753,
+ "by_dept": {
+  "Accessories": 150,
+  "Bath, Body & Massage": 12,
+  "Candles": 10,
+  "Christmas Gifts": 101,
+  "Clothing": 144,
+  "Electronics & Gadgets": 10,
+  "For Men": 8,
+  "Home & Comfort": 52,
+  "Home Gifts": 12,
+  "Jewelry": 216,
+  "Pajamas & Loungewear": 8,
+  "Shoes & Slippers": 7,
+  "Kitchen": 23
+ },
+ "has_pic": 449,
+ "us_warehouse": 219,
+ "discount": 235,
+ "note": "730 items: 618 as of Nov 23 + 119 women's clothing added 2026-11-23 (31 jeans, 15 bling jeans, 43 shirts, 30 denim shorts; 15 bling cards skipped as duplicate SKUs of jeans cards) - 7 Kids & Toys items removed 2026-11-23 (kids clothing goes only to Precious Threads). New clothing priced by cost band, all price_status to_verify; no hosted CJ image URL on file yet for the new clothing - cards show the supplier-page placeholder until images are pulled. CJ prices set at listed cost x 1.5 retail; CJ costs still to verify against live CJ. Checkout wired (Stripe single checkout). + 23 pots & frying pans added 2026-11-23 (18 cards, Kitchen dept, all price_status to_verify; no hosted CJ image URL on file yet for the new kitchen items - cards show the supplier-page placeholder until images are pulled)."
 }
