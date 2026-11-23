@@ -1,1 +1,1 @@
-{"$schema":"https://openapi.vercel.sh/vercel.json","cleanUrls":true,"functions":{"api/create-checkout-session.js":{"includeFiles":["products.json","gifts.json"]}}}
+{"$schema":"https://openapi.vercel.sh/vercel.json","cleanUrls":true,"functions":{"api/create-checkout-session.js":{"includeFiles":"{products.json,gifts.json}"}}}
