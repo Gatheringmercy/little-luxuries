@@ -12,7 +12,6 @@ header,section.hero,main,footer{position:relative;z-index:1}
 header{position:sticky;top:0;background:rgba(255,249,240,.96);border-bottom:2px solid var(--gold);z-index:10;padding:14px 20px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
 h1{font-family:var(--serif);font-weight:600;font-size:30px;color:var(--red);letter-spacing:.02em}
 h1 span{font-size:13px;color:var(--green);letter-spacing:.2em;text-transform:uppercase;display:block;font-family:var(--sans)}
-.badge{background:#FDECEA;border:1px solid var(--red);border-radius:20px;padding:6px 14px;font-size:13px;color:var(--red)}
 .hero{position:relative;max-height:520px;overflow:hidden}
 .hero video{width:100%;height:520px;object-fit:cover;display:block}
 .hero .over{position:absolute;inset:0;background:linear-gradient(180deg,rgba(31,92,61,.10),rgba(58,42,34,.55));display:flex;flex-direction:column;justify-content:flex-end;padding:32px;color:#fff}
@@ -30,9 +29,9 @@ main{max-width:1200px;margin:0 auto;padding:28px 20px 60px}
 .card .pr{color:var(--red);font-weight:500}
 .card .pr i{font-size:12px;color:var(--muted);font-style:normal}
 .card .meta{font-size:12px;color:var(--muted)}
-.card .meta a{color:var(--green)}
 .card button{margin-top:8px;width:100%;padding:9px;border:1px solid var(--red);background:#fff;color:var(--red);border-radius:8px;cursor:pointer;font:inherit}
 .card button:hover{background:var(--red);color:#fff}
+.card button:disabled{opacity:.6;cursor:wait}
 h2.sec{font-family:var(--serif);font-size:28px;color:var(--red);margin:36px 0 6px}
 .soon{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-top:14px}
 .soon .card{text-align:left;padding:16px}
@@ -45,7 +44,7 @@ footer{border-top:2px solid var(--gold);padding:28px 20px;text-align:center;colo
 <body>
 <video id="bg" src="bg.mp4" muted loop autoplay playsinline aria-hidden="true"></video>
 <div id="bgwrap" aria-hidden="true"></div>
-<header><h1>Little Luxuries Emporium<span>Christmas gifts for everybody</span></h1><span class="badge">DRAFT PREVIEW &mdash; not live yet</span></header>
+<header><h1>Little Luxuries Emporium<span>Christmas gifts for everybody</span></h1></header>
 <section class="hero">
 <video src="hero.mp4" poster="hero-poster.jpg" muted loop autoplay playsinline preload="metadata" aria-label="Inside Little Luxuries Emporium"></video>
 <div class="over"><h2>Christmas gifts for everybody.</h2></div>
@@ -61,28 +60,59 @@ footer{border-top:2px solid var(--gold);padding:28px 20px;text-align:center;colo
 
 <h2 class="sec">Coming soon</h2>
 <div class="soon">
-<div class="card"><b>Gift Sets</b></div>
 <div class="card"><b>Earbuds &amp; Headphones</b></div>
 <div class="card"><b>Name-Brand Tennis Shoes</b></div>
 <div class="card"><b>Designer-Style Gifts</b></div>
 </div>
 </main>
-<footer>Little Luxuries Emporium &mdash; draft preview, November 2026. Not live, nothing for sale yet.</footer>
+<footer>Little Luxuries Emporium &mdash; Christmas gifts for everybody.</footer>
 <div id="toast"></div>
 <script>
 let PRODUCTS=[]; let dept='All';
-const DEPTS=['All','Discount / Blowout','Christmas Gifts','Jewelry','Clothing','Shoes & Slippers','Pajamas & Loungewear','Electronics & Gadgets','Home Gifts','Kids & Toys'];
-function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',3200)}
+const DEPTS=['All','Discount / Blowout','Christmas Gifts','Jewelry','Accessories','Home & Comfort','Bath, Body & Massage','For Men','Clothing','Shoes & Slippers','Pajamas & Loungewear','Electronics & Gadgets','Home Gifts','Kids & Toys'];
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',3400)}
 if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){const b=document.getElementById('bg');if(b){b.pause();b.style.display='none'}}
+if(location.search.indexOf('paid=1')>=0){toast('Thank you \u2014 your order is in.')}
+if(location.search.indexOf('cancelled=1')>=0){toast('Checkout cancelled \u2014 nothing was charged.')}
 fetch('products.json').then(r=>r.json()).then(d=>{PRODUCTS=d;buildFilters();render()});
 function buildFilters(){document.getElementById('filters').innerHTML=DEPTS.map(x=>`<button class="${x===dept?'on':''}" onclick="dept='${x.replace(/'/g,"\\'")}';buildFilters();render()">${x}</button>`).join('')}
 function render(){
  const q=(document.getElementById('q').value||'').toLowerCase();
  const list=PRODUCTS.filter(p=>((dept==='All')||(dept==='Discount / Blowout'?p.discount:p.dept===dept))&&(!q||(p.name+' '+p.cat+' '+p.sku).toLowerCase().includes(q)));
- document.getElementById('count').textContent=list.length+' products shown of '+PRODUCTS.length+' in this preview.';
+ document.getElementById('count').textContent=list.length+' products shown of '+PRODUCTS.length+' in the store.';
  document.getElementById('grid').innerHTML=list.map(p=>card(p)).join('');
  const disc=PRODUCTS.filter(p=>p.discount);
  document.getElementById('discountGrid').innerHTML=disc.map(p=>card(p)).join('');
+ const buys=document.querySelectorAll('[data-buy]');
+ for(let i=0;i<buys.length;i++){buys[i].addEventListener('click',function(){startCheckout(this);});}
 }
-function card(p){return `<div class="card">${p.has_pic?`<img src="${p.img}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:`<div class="nopic">Picture on the CJ product page &mdash; review before live</div>`}<div class="nm">${p.name}</div><div class="pr">CJ cost $${p.cj_price} <i>&mdash; price to verify</i></div><div class="meta">${p.dept} &middot; CJ Dropshipping &middot; ${p.us_warehouse?'US warehouse':'Ships from China'}<br><a href="${p.url}" target="_blank" rel="noopener">See it on CJ</a> &middot; ${p.sku}</div><button onclick="toast('Checkout coming soon. This is a draft preview &mdash; nothing is for sale yet.')">Buy &mdash; coming soon</button></div>`}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+// One checkout for every product: the Buy button asks the site's checkout
+// function for a Stripe payment page for that item.
+function startCheckout(btn){
+ const name=btn.getAttribute('data-name')||'';
+ const cents=Math.round(parseFloat(btn.getAttribute('data-price')||'0')*100);
+ const sku=btn.getAttribute('data-sku')||'';
+ if(!name||!cents){toast('Sorry \u2014 that item can\u2019t be checked out yet.');return;}
+ btn.disabled=true;
+ const oldText=btn.textContent;btn.textContent='Opening checkout\u2026';
+ fetch('/api/create-checkout-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:name,price_cents:cents,sku:sku})}).then(r=>r.json()).then(d=>{
+  if(d&&d.url){window.location.href=d.url;return;}
+  btn.disabled=false;btn.textContent=oldText;
+  toast('Checkout isn\u2019t ready yet \u2014 please try again in a moment.');
+ }).catch(()=>{
+  btn.disabled=false;btn.textContent=oldText;
+  toast('Checkout isn\u2019t ready yet \u2014 please try again in a moment.');
+ });
+}
+function card(p){
+ const isCJ = p.source==='CJ Dropshipping';
+ const img = p.has_pic?`<img src="${esc(p.img)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:`<div class="nopic">Picture on the supplier page &mdash; review before live</div>`;
+ const priceLine = `<div class="pr">$${esc(p.price)}${p.was_price?` <i>&mdash; was $${esc(p.was_price)}</i>`:''}</div>`;
+ const wh = p.us_warehouse ? 'US warehouse' : (p.warehouse ? esc(p.warehouse) : 'Warehouse to verify');
+ const metaLine = isCJ
+   ? `<div class="meta">${esc(p.dept)} &middot; ${esc(p.cat)} &middot; CJ Dropshipping &middot; ${wh} &middot; ${esc(p.sku)}</div>`
+   : `<div class="meta">${esc(p.dept)} &middot; ${esc(p.cat)} &middot; ${esc(p.source||'The Crystal Camellia')} &middot; ${esc(p.sku)}</div>`;
+ return `<div class="card">${img}<div class="nm">${esc(p.name)}</div>${priceLine}${metaLine}<button data-buy data-name="${esc(p.name)}" data-price="${esc(p.price)}" data-sku="${esc(p.sku||'')}">Buy</button></div>`;
+}
 </script></body></html>
