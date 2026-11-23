@@ -41,6 +41,11 @@ h2.sec{font-family:var(--serif);font-size:28px;color:var(--red);margin:36px 0 6p
 .soon .card{text-align:left;padding:16px}
 .soon .card b{font-family:var(--serif);font-size:19px;color:var(--red)}
 footer{border-top:2px solid var(--gold);padding:28px 20px;text-align:center;color:var(--muted);font-size:14px}
+footer h3{font-family:var(--serif);font-size:22px;color:var(--red);font-weight:600;margin-bottom:10px}
+footer .sister-links{line-height:2.1}
+footer .sister-links a{color:var(--green);text-decoration:none}
+footer .sister-links a:hover{text-decoration:underline}
+footer .tagline{margin-top:18px}
 #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--text);color:#fff;padding:12px 20px;border-radius:10px;display:none;max-width:90%;text-align:center;z-index:20}
 .count{color:var(--muted);font-size:14px}
 @media (prefers-reduced-motion:reduce){#bg{display:none}}
@@ -69,7 +74,11 @@ footer{border-top:2px solid var(--gold);padding:28px 20px;text-align:center;colo
 <div class="card"><b>Designer-Style Gifts</b></div>
 </div>
 </main>
-<footer>Little Luxuries Emporium &mdash; Christmas gifts for everybody.</footer>
+<footer>
+<h3>Our Sister Stores</h3>
+<p class="sister-links"><a href="https://crystalcamellia.vercel.app">The Crystal Camellia</a> &middot; <span>Precious Threads &mdash; coming soon</span> &middot; <span>Vita di Lusso &mdash; coming soon</span> &middot; <span>Bella Donna &mdash; coming soon</span> &middot; <span>Petite Boutique &mdash; coming soon</span> &middot; <span>The Guy&rsquo;s Store &mdash; coming soon</span> &middot; <a href="https://outlawunderwear.store">Outlaw Underwear &amp; Pleasure Emporium</a> &middot; <span>Pill-O-Talk &mdash; coming soon</span> &middot; <span>Cathy&rsquo;s Comfort Corner &mdash; coming soon</span> &middot; <span>Mrs. Gadget &mdash; coming soon</span> &middot; <span>Wunderbar Euroshop &mdash; coming soon</span></p>
+<p class="tagline">Little Luxuries Emporium &mdash; Christmas gifts for everybody.</p>
+</footer>
 <div id="toast"></div>
 <script>
 let PRODUCTS=[]; let dept='All';
