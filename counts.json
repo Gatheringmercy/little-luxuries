@@ -1,8 +1,9 @@
 {
- "total": 608,
+ "total": 618,
  "by_dept": {
   "Accessories": 150,
   "Bath, Body & Massage": 12,
+  "Candles": 10,
   "Christmas Gifts": 101,
   "Clothing": 25,
   "Electronics & Gadgets": 10,
@@ -15,7 +16,7 @@
   "Shoes & Slippers": 7
  },
  "has_pic": 439,
- "us_warehouse": 68,
- "discount": 236,
- "note": "608 items: 105 CJ + 437 moved from The Crystal Camellia 2026-11-22 + 66 CJ Christmas items added 2026-11-22 (57 Christmas decor/gifts, 5 baby Christmas, 3 family pajamas, 1 faith gift box). CJ prices set at listed cost x 1.5 retail; CJ costs still to verify against live CJ. Checkout wired (Stripe single checkout). New CJ Christmas items have no picture yet (has_pic false) \u2014 picture review still pending."
+ "us_warehouse": 78,
+ "discount": 240,
+ "note": "618 items: 105 CJ + 437 moved from The Crystal Camellia 2026-11-22 + 66 CJ Christmas items added 2026-11-22 + 10 CJ candles added 2026-11-23 (genuine wax candles from the CJ probe; picture URLs not on file yet \u2014 cards show the supplier-page placeholder until images are pulled). CJ prices set at listed cost x 1.5 retail; CJ costs still to verify against live CJ. Checkout wired (Stripe single checkout)."
 }

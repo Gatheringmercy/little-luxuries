@@ -69,7 +69,7 @@ footer{border-top:2px solid var(--gold);padding:28px 20px;text-align:center;colo
 <div id="toast"></div>
 <script>
 let PRODUCTS=[]; let dept='All';
-const DEPTS=['All','Discount / Blowout','Christmas Gifts','Jewelry','Accessories','Home & Comfort','Bath, Body & Massage','For Men','Clothing','Shoes & Slippers','Pajamas & Loungewear','Electronics & Gadgets','Home Gifts','Kids & Toys'];
+const DEPTS=['All','Discount / Blowout','Christmas Gifts','Candles','Jewelry','Accessories','Home & Comfort','Bath, Body & Massage','For Men','Clothing','Shoes & Slippers','Pajamas & Loungewear','Electronics & Gadgets','Home Gifts','Kids & Toys'];
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',3400)}
 if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){const b=document.getElementById('bg');if(b){b.pause();b.style.display='none'}}
 if(location.search.indexOf('paid=1')>=0){toast('Thank you \u2014 your order is in.')}
