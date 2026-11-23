@@ -48,12 +48,40 @@ footer .sister-links a:hover{text-decoration:underline}
 footer .tagline{margin-top:18px}
 #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--text);color:#fff;padding:12px 20px;border-radius:10px;display:none;max-width:90%;text-align:center;z-index:20}
 .count{color:var(--muted);font-size:14px}
+.cartbtn{border:1px solid var(--red);background:#fff;color:var(--red);border-radius:20px;padding:8px 18px;cursor:pointer;font:inherit;font-size:15px}
+.cartbtn:hover{background:var(--red);color:#fff}
+.cartbtn .badge{background:var(--red);color:#fff;border-radius:12px;padding:1px 8px;margin-left:4px;font-size:13px}
+.cartbtn:hover .badge{background:#fff;color:var(--red)}
+#overlay{position:fixed;inset:0;background:rgba(58,42,34,.45);display:none;z-index:30}
+#drawer{position:fixed;top:0;right:0;height:100%;width:min(400px,94vw);background:var(--bg);border-left:2px solid var(--gold);z-index:31;transform:translateX(105%);transition:transform .25s ease;display:flex;flex-direction:column;box-shadow:-4px 0 18px rgba(58,42,34,.25)}
+#drawer.open{transform:translateX(0)}
+#drawer header{position:static;background:none;border-bottom:1px solid var(--line);padding:16px 18px}
+#drawer h2{font-family:var(--serif);font-size:24px;color:var(--red)}
+#drawer .body{flex:1;overflow-y:auto;padding:14px 18px}
+#drawer .foot{border-top:1px solid var(--line);padding:16px 18px}
+.cartline{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.cartline .nm{flex:1;font-size:14px;text-align:left}
+.cartline .qty{display:flex;gap:6px;align-items:center}
+.cartline .qty button{width:28px;height:28px;padding:0;margin:0;border-radius:6px}
+.cartline .rm{border:none;background:none;color:var(--muted);width:auto;padding:4px 6px;font-size:13px;cursor:pointer;text-decoration:underline}
+.cartline .amt{font-weight:500;color:var(--red);white-space:nowrap}
+.subtotal{display:flex;justify-content:space-between;font-weight:500;font-size:17px;margin:6px 0 12px}
+#drawer .checkout{width:100%;padding:12px;border:1px solid var(--red);background:var(--red);color:#fff;border-radius:8px;cursor:pointer;font:inherit;font-size:16px}
+#drawer .checkout:hover{background:#8d1425}
+#drawer .checkout:disabled{opacity:.6;cursor:wait}
+#drawer .keep{width:100%;margin-top:8px;padding:10px;border:1px solid var(--green);background:#fff;color:var(--green);border-radius:8px;cursor:pointer;font:inherit}
+.giftsec{border:1px dashed var(--gold);border-radius:10px;padding:12px;margin:12px 0;background:#fff}
+.giftsec b{font-family:var(--serif);color:var(--green);font-size:18px}
+.giftsec label{display:block;padding:8px 4px;font-size:14px;cursor:pointer}
+.giftsec input{margin-right:8px}
+.giftfree{color:var(--green);font-weight:500}
+.emptycart{color:var(--muted);text-align:center;padding:30px 0}
 @media (prefers-reduced-motion:reduce){#bg{display:none}}
 </style></head>
 <body>
 <video id="bg" src="bg.mp4" muted loop autoplay playsinline aria-hidden="true"></video>
 <div id="bgwrap" aria-hidden="true"></div>
-<header><h1>Little Luxuries Emporium<span>Christmas gifts for everybody</span></h1></header>
+<header><h1>Little Luxuries Emporium<span>Christmas gifts for everybody</span></h1><button class="cartbtn" id="cartBtn" onclick="openCart()">Cart <span class="badge" id="cartCount">0</span></button></header>
 <section class="hero">
 <video src="hero.mp4" poster="hero-poster.jpg" muted loop autoplay playsinline preload="metadata" aria-label="Inside Little Luxuries Emporium"></video>
 <div class="over"><h2>Christmas gifts for everybody.</h2></div>
@@ -80,14 +108,24 @@ footer .tagline{margin-top:18px}
 <p class="tagline">Little Luxuries Emporium &mdash; Christmas gifts for everybody.</p>
 </footer>
 <div id="toast"></div>
+<div id="overlay" onclick="closeCart()"></div>
+<aside id="drawer" aria-label="Shopping cart">
+<header><h2>Your Cart</h2><button class="cartbtn" onclick="closeCart()">Close</button></header>
+<div class="body"><div id="cartLines"></div><div id="giftWrap"></div></div>
+<div class="foot">
+<div class="subtotal"><span>Subtotal</span><span id="cartSubtotal">$0.00</span></div>
+<button class="checkout" id="cartCheckoutBtn" onclick="checkoutCart()">Checkout</button>
+<button class="keep" onclick="closeCart()">Keep shopping</button>
+</div>
+</aside>
 <script>
 let PRODUCTS=[]; let dept='All';
 const DEPTS=['All','Discount / Blowout','Christmas Gifts','Candles','Jewelry','Accessories','Home & Comfort','Bath, Body & Massage','For Men','Clothing','Shoes & Slippers','Pajamas & Loungewear','Electronics & Gadgets','Home Gifts','Kitchen','Kids & Toys'];
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',3400)}
 if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){const b=document.getElementById('bg');if(b){b.pause();b.style.display='none'}}
-if(location.search.indexOf('paid=1')>=0){toast('Thank you \u2014 your order is in.')}
+if(location.search.indexOf('paid=1')>=0){toast('Thank you \u2014 your order is in.');try{localStorage.removeItem('ll_cart_v1');}catch(e){}}
 if(location.search.indexOf('cancelled=1')>=0){toast('Checkout cancelled \u2014 nothing was charged.')}
-fetch('products.json').then(r=>r.json()).then(d=>{PRODUCTS=d;buildFilters();render()});
+fetch('products.json').then(r=>r.json()).then(d=>{PRODUCTS=d;buildFilters();render();syncCartPrices();});
 function buildFilters(){document.getElementById('filters').innerHTML=DEPTS.map(x=>`<button class="${x===dept?'on':''}" onclick="dept='${x.replace(/'/g,"\\'")}';buildFilters();render()">${x}</button>`).join('')}
 function render(){
  const q=(document.getElementById('q').value||'').toLowerCase();
@@ -100,6 +138,8 @@ function render(){
  document.getElementById('discountGrid').innerHTML=disc.map(p=>card(p)).join('');
  const buys=document.querySelectorAll('[data-buy]');
  for(let i=0;i<buys.length;i++){buys[i].addEventListener('click',function(){startCheckout(this);});}
+ const adds=document.querySelectorAll('[data-add]');
+ for(let i=0;i<adds.length;i++){adds[i].addEventListener('click',function(){addToCart(this);});}
 }
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 // Uniform order: inside each department, items group by kind — all the
@@ -161,6 +201,124 @@ function kindOf(p){
 function kindRank(p){const i=KIND_ORDER.indexOf(kindOf(p));return i<0?KIND_ORDER.length:i;}
 function byKind(a,b){const d=kindRank(a)-kindRank(b);return d!==0?d:a.name.localeCompare(b.name);}
 function byDeptKind(a,b){const d=DEPTS.indexOf(a.dept)-DEPTS.indexOf(b.dept);return d!==0?d:byKind(a,b);}
+// ---- Shopping cart: several items in one order, saved in the browser so
+// it survives a reload. The cart sends SKUs + quantities to the checkout
+// function; prices are looked up in products.json on the server, so the
+// browser never sets the price.
+var GIFTS={threshold_cents:7500,gifts:[]};
+fetch('gifts.json').then(r=>r.ok?r.json():null).then(d=>{if(d&&typeof d==='object'){GIFTS=d;}renderCart();}).catch(()=>{});
+var Cart={
+ items:[],giftSku:null,
+ load:function(){try{var raw=localStorage.getItem('ll_cart_v1');if(raw){var d=JSON.parse(raw);if(Array.isArray(d.items))this.items=d.items;if(typeof d.giftSku==='string')this.giftSku=d.giftSku;}}catch(e){}},
+ save:function(){try{localStorage.setItem('ll_cart_v1',JSON.stringify({items:this.items,giftSku:this.giftSku}));}catch(e){}},
+ key:function(sku,size){return sku+'|'+(size||'');},
+ add:function(sku,name,price,size){
+  var k=this.key(sku,size);
+  for(var i=0;i<this.items.length;i++){if(this.items[i].key===k){this.items[i].qty++;this.save();renderCart();return;}}
+  this.items.push({key:k,sku:sku,name:name,price:String(price),size:size||'',qty:1});
+  this.save();renderCart();
+ },
+ count:function(){var n=0;for(var i=0;i<this.items.length;i++)n+=this.items[i].qty;return n;},
+ subtotalCents:function(){var s=0;for(var i=0;i<this.items.length;i++)s+=Math.round(parseFloat(this.items[i].price)*100)*this.items[i].qty;return s;},
+ giftEligible:function(){return this.subtotalCents()>=Number(GIFTS.threshold_cents||7500);},
+ syncGift:function(){if(this.giftSku&&!this.giftEligible())this.giftSku=null;},
+ bump:function(i,d){var it=this.items[i];if(!it)return;it.qty+=d;if(it.qty<=0)this.items.splice(i,1);this.syncGift();this.save();renderCart();},
+ removeAt:function(i){this.items.splice(i,1);this.syncGift();this.save();renderCart();},
+ clear:function(){this.items=[];this.giftSku=null;this.save();renderCart();}
+};
+if(typeof window!=='undefined'){window.Cart=Cart;}
+Cart.load();
+function money(c){return '$'+(c/100).toFixed(2);}
+// After the catalog loads, re-check every saved cart line against it:
+// drop lines whose item is gone, refresh prices/names (prices are
+// placeholders and may have changed since the cart was saved).
+function syncCartPrices(){
+ var changed=false;
+ for(var i=Cart.items.length-1;i>=0;i--){
+  var it=Cart.items[i];var p=null;
+  for(var j=0;j<PRODUCTS.length;j++){if(PRODUCTS[j].sku===it.sku){p=PRODUCTS[j];break;}}
+  if(!p){Cart.items.splice(i,1);changed=true;continue;}
+  var price=p.price;
+  if(it.size&&Array.isArray(p.size_chart)){for(var k=0;k<p.size_chart.length;k++){if(String(p.size_chart[k].size)===it.size){price=p.size_chart[k].price;break;}}}
+  if(String(price)!==String(it.price)){it.price=String(price);changed=true;}
+  var nm=it.size?p.name+' — '+it.size:p.name;
+  if(nm!==it.name){it.name=nm;changed=true;}
+ }
+ Cart.syncGift();
+ if(changed){Cart.save();}
+ renderCart();
+}
+function renderCart(){
+ var badge=document.getElementById('cartCount');
+ if(badge)badge.textContent=Cart.count();
+ var lines=document.getElementById('cartLines');
+ if(!lines)return;
+ if(Cart.items.length===0){
+  lines.innerHTML='<p class="emptycart">Your cart is empty.</p>';
+ }else{
+  lines.innerHTML=Cart.items.map(function(it,i){
+   return '<div class="cartline"><div class="nm">'+esc(it.name)+'</div>'
+   +'<div class="qty"><button type="button" onclick="Cart.bump('+i+',-1)">\u2212</button><span>'+it.qty+'</span><button type="button" onclick="Cart.bump('+i+',1)">+</button></div>'
+   +'<div class="amt">'+money(Math.round(parseFloat(it.price)*100)*it.qty)+'</div>'
+   +'<button type="button" class="rm" onclick="Cart.removeAt('+i+')">Remove</button></div>';
+  }).join('');
+  if(Cart.giftSku){
+   var g=null;for(var i=0;i<GIFTS.gifts.length;i++){if(GIFTS.gifts[i].sku===Cart.giftSku){g=GIFTS.gifts[i];break;}}
+   if(g){lines.innerHTML+='<div class="cartline"><div class="nm">Free gift: '+esc(g.name)+'</div><div class="amt giftfree">FREE</div></div>';}
+  }
+ }
+ var sub=document.getElementById('cartSubtotal');
+ if(sub)sub.textContent=money(Cart.subtotalCents());
+ var wrap=document.getElementById('giftWrap');
+ if(wrap){
+  // The gift list is data (gifts.json), not code. Empty list = no picker.
+  // Gift names only — no prices on the free gifts.
+  if(!GIFTS.gifts.length||!Cart.giftEligible()){
+   wrap.innerHTML='';
+  }else{
+   wrap.innerHTML='<div class="giftsec"><b>You\u2019ve earned a free gift!</b><div>Your order is over $75 \u2014 pick your free gift:</div>'
+   +GIFTS.gifts.map(function(g){
+     return '<label><input type="radio" name="freegift" value="'+esc(g.sku)+'"'+(Cart.giftSku===g.sku?' checked':'')+' onclick="Cart.giftSku=this.value;Cart.save();renderCart()">'+esc(g.name)+'</label>';
+   }).join('')+'</div>';
+  }
+ }
+ var co=document.getElementById('cartCheckoutBtn');
+ if(co)co.disabled=Cart.items.length===0;
+}
+function openCart(){renderCart();document.getElementById('drawer').classList.add('open');document.getElementById('overlay').style.display='block';}
+function closeCart(){document.getElementById('drawer').classList.remove('open');document.getElementById('overlay').style.display='none';}
+// Add the card's currently shown item to the cart (size pick included:
+// the Buy button's name/price/size always reflect the picked size).
+function addToCart(btn){
+ var cardEl=btn.closest('.card');if(!cardEl)return;
+ var buy=cardEl.querySelector('[data-buy]');
+ var sku=buy?buy.getAttribute('data-sku'):btn.getAttribute('data-sku');
+ var name=buy?buy.getAttribute('data-name'):btn.getAttribute('data-name');
+ var price=buy?buy.getAttribute('data-price'):btn.getAttribute('data-price');
+ var size=buy?buy.getAttribute('data-size')||'':'';
+ if(!sku||!name||!price){toast('Sorry \u2014 that item can\u2019t be added yet.');return;}
+ Cart.add(sku,name,price,size);
+ toast('Added to cart.');
+}
+function checkoutCart(){
+ if(Cart.items.length===0){toast('Your cart is empty.');return;}
+ var btn=document.getElementById('cartCheckoutBtn');
+ btn.disabled=true;var oldText=btn.textContent;btn.textContent='Opening checkout\u2026';
+ var payload={items:Cart.items.map(function(it){
+  var o={sku:it.sku,qty:it.qty,price_cents:Math.round(parseFloat(it.price)*100)};
+  if(it.size)o.size=it.size;
+  return o;
+ })};
+ if(Cart.giftSku)payload.gift_sku=Cart.giftSku;
+ fetch('/api/create-checkout-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).then(r=>r.json()).then(d=>{
+  if(d&&d.url){window.location.href=d.url;return;}
+  btn.disabled=false;btn.textContent=oldText;
+  toast('Checkout isn\u2019t ready yet \u2014 please try again in a moment.');
+ }).catch(()=>{
+  btn.disabled=false;btn.textContent=oldText;
+  toast('Checkout isn\u2019t ready yet \u2014 please try again in a moment.');
+ });
+}
 // One checkout for every product: the Buy button asks the site's checkout
 // function for a Stripe payment page for that item.
 function startCheckout(btn){
@@ -192,13 +350,13 @@ function card(p){
  const buyName = defaultFirst ? (p.name+' — '+p.size_chart[0].size) : p.name;
  const priceLine = `<div class="pr"><span class="amt">$${esc(buyPrice)}</span>${(!hasChart&&p.was_price)?` <i>&mdash; was $${esc(p.was_price)}</i>`:''}</div>`;
  const chartHtml = hasChart
-   ? `<div class="chartlbl">${esc(p.chart_label||'Choose a size:')}</div><div class="chart">${p.size_chart.map((e,i)=>`<button type="button" class="${(defaultFirst&&i===0)?'on':''}" data-price="${esc(e.price)}" data-fullname="${esc(p.name+' — '+e.size)}" onclick="pickSize(this)">${esc(e.size)} &mdash; $${esc(e.price)}</button>`).join('')}</div>`
+   ? `<div class="chartlbl">${esc(p.chart_label||'Choose a size:')}</div><div class="chart">${p.size_chart.map((e,i)=>`<button type="button" class="${(defaultFirst&&i===0)?'on':''}" data-size="${esc(e.size)}" data-price="${esc(e.price)}" data-fullname="${esc(p.name+' — '+e.size)}" onclick="pickSize(this)">${esc(e.size)} &mdash; $${esc(e.price)}</button>`).join('')}</div>`
    : '';
  const wh = p.us_warehouse ? 'US warehouse' : (p.warehouse ? esc(p.warehouse) : 'Warehouse to verify');
  const metaLine = isCJ
    ? `<div class="meta">${esc(p.dept)} &middot; ${esc(p.cat)} &middot; CJ Dropshipping &middot; ${wh} &middot; ${esc(p.sku)}</div>`
    : `<div class="meta">${esc(p.dept)} &middot; ${esc(p.cat)} &middot; ${esc(p.source||'The Crystal Camellia')} &middot; ${esc(p.sku)}</div>`;
- return `<div class="card">${img}<div class="nm">${esc(p.name)}</div>${priceLine}${chartHtml}${metaLine}<button data-buy data-base-name="${esc(p.name)}" data-name="${esc(buyName)}" data-price="${esc(buyPrice)}" data-sku="${esc(p.sku||'')}">Buy</button></div>`;
+ return `<div class="card">${img}<div class="nm">${esc(p.name)}</div>${priceLine}${chartHtml}${metaLine}<button data-buy data-base-name="${esc(p.name)}" data-name="${esc(buyName)}" data-price="${esc(buyPrice)}" data-size="${defaultFirst?esc(p.size_chart[0].size):''}" data-sku="${esc(p.sku||'')}">Buy</button><button data-add>Add to Cart</button></div>`;
 }
 // Picking a size/style on a chart card: highlight it, show its price, and
 // point the Buy button at that size's price and name.
@@ -212,6 +370,7 @@ function pickSize(el){
  if(buy){
   buy.setAttribute('data-price', el.getAttribute('data-price'));
   buy.setAttribute('data-name', el.getAttribute('data-fullname')||buy.getAttribute('data-base-name')||'');
+  buy.setAttribute('data-size', el.getAttribute('data-size')||'');
  }
  if(amt) amt.textContent='$'+el.getAttribute('data-price');
 }
