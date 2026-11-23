@@ -28,6 +28,10 @@ main{max-width:1200px;margin:0 auto;padding:28px 20px 60px}
 .card .nm{font-weight:400;font-size:14px;margin:8px 0 2px;min-height:42px}
 .card .pr{color:var(--red);font-weight:500}
 .card .pr i{font-size:12px;color:var(--muted);font-style:normal}
+.chartlbl{font-size:12px;color:var(--muted);margin-top:8px}
+.chart{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:4px 0 2px}
+.chart button{width:auto;padding:5px 10px;margin:0;border:1px solid var(--green);background:#fff;color:var(--text);border-radius:16px;font-size:13px;cursor:pointer}
+.chart button.on{background:var(--green);color:#fff;border-color:var(--green)}
 .card .meta{font-size:12px;color:var(--muted)}
 .card button{margin-top:8px;width:100%;padding:9px;border:1px solid var(--red);background:#fff;color:var(--red);border-radius:8px;cursor:pointer;font:inherit}
 .card button:hover{background:var(--red);color:#fff}
@@ -79,14 +83,75 @@ function buildFilters(){document.getElementById('filters').innerHTML=DEPTS.map(x
 function render(){
  const q=(document.getElementById('q').value||'').toLowerCase();
  const list=PRODUCTS.filter(p=>((dept==='All')||(dept==='Discount / Blowout'?p.discount:p.dept===dept))&&(!q||(p.name+' '+p.cat+' '+p.sku).toLowerCase().includes(q)));
+ if(dept==='All'){list.sort(byDeptKind);}else{list.sort(byKind);}
  document.getElementById('count').textContent=list.length+' products shown of '+PRODUCTS.length+' in the store.';
  document.getElementById('grid').innerHTML=list.map(p=>card(p)).join('');
  const disc=PRODUCTS.filter(p=>p.discount);
+ disc.sort(byDeptKind);
  document.getElementById('discountGrid').innerHTML=disc.map(p=>card(p)).join('');
  const buys=document.querySelectorAll('[data-buy]');
  for(let i=0;i<buys.length;i++){buys[i].addEventListener('click',function(){startCheckout(this);});}
 }
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+// Uniform order: inside each department, items group by kind — all the
+// leggings together, all the dresses together, all the women's shirts
+// together — then by name. No willy-nilly file order.
+const KIND_RULES=[
+ ['Leggings',/\blegging/i],
+ ['Dresses',/\bdress(es)?\b/i],
+ ['Jumpsuits & Rompers',/\bjumpsuit|\bromper|\bonesie|\bbodysuit/i],
+ ['Hoodies & Sweatshirts',/\bhoodie|\bsweatshirt/i],
+ ['Sweaters & Cardigans',/\bsweater|\bcardigan|\bknit\b/i],
+ ['Jackets & Coats',/\bjacket|\bcoat\b|\bblazer/i],
+ ['Shirts',/\bshirt|\bblouse|\bt-?shirt\b|\btee\b/i],
+ ['Pants & Jeans',/\bpants|\bjeans|\btrousers/i],
+ ['Skirts',/\bskirt/i],
+ ['Pajamas & Sleepwear',/\bpajama|\bsleepwear|\bnightgown|\bsleep dress/i],
+ ['Socks',/\bsock/i],
+ ['Hats',/\bhat|\bbeanie|\bcap\b/i],
+ ['Gloves',/\bglove|\bmitten/i],
+ ['Scarves',/\bscarf|\bscarves/i],
+ ['Belts',/\bbelt/i],
+ ['Wallets',/\bwallet/i],
+ ['Purses & Bags',/\bpurse|\bbag\b|\bhandbag|\btote|\bbackpack/i],
+ ['Necklaces',/\bnecklace|\bpendant/i],
+ ['Earrings',/\bearring/i],
+ ['Bracelets',/\bbracelet|\bbangle/i],
+ ['Anklets',/\banklet/i],
+ ['Rings',/\bring\b/i],
+ ['Brooches',/\bbrooch/i],
+ ['Watches',/\bwatch/i],
+ ['Sunglasses',/\bsunglass/i],
+ ['Hair Accessories',/\bhair\b|\bheadband|\bheadwrap/i],
+ ['Candles',/\bcandle/i],
+ ['Ornaments',/\bornament/i],
+ ['Trees',/\btrees?\b/i],
+ ['Lights',/\blight/i],
+ ['Christmas Decor',/\bwreath|\bgarland|\binflatable|\bfigurine|\bsnowman|\bdoor hanging|\bcarving|\bchristmas ball/i],
+ ['Slippers',/\bslipper/i],
+ ['Shoes',/\bshoe|\bsneaker|\bboot\b|\bsandal/i],
+ ['Blankets & Throws',/\bblanket|\bthrow\b|\btowel/i],
+ ['Kitchen',/\bkitchen|\bmug\b|\btumbler/i],
+ ['Lanterns',/\blantern/i],
+ ['Vases',/\bvase/i],
+ ['Wall Decor',/\bwall\b/i],
+ ['Toys',/\btoy|\bdoll|\bstuffed|\bplush toy/i],
+ ['Gift Sets',/\bgift set|\bgift box|\bgift basket/i],
+ ['Keychains',/\bkeychain/i],
+ ['Cosmetics',/\bcosmetic|\bmakeup|\blipstick/i],
+];
+// Category fallback for items whose name carries no kind word.
+const CATKIND={Necklaces:'Necklaces',Scarves:'Scarves',Hats:'Hats',Belts:'Belts',Candles:'Candles',Blankets:'Blankets & Throws',Watches:'Watches',Sunglasses:'Sunglasses',Purses:'Purses & Bags',Earrings:'Earrings',Bracelets:'Bracelets',Rings:'Rings',Brooches:'Brooches',Socks:'Socks',Gloves:'Gloves',Slippers:'Slippers','Pendant Sets':'Necklaces','Wedding & Bridal':'Wedding & Bridal','Leg Warmers':'Leggings',Baby:'Baby & Toddler','Kids (babies)':'Baby & Toddler','Kids (babies clothing)':'Baby & Toddler','Kids (toys)':'Toys',Toys:'Toys',Kids:'Toys',Christmas:'Christmas Decor','Home (Christmas)':'Christmas Decor','Home (Christmas crafts)':'Christmas Decor','Kids/Home (Christmas)':'Christmas Decor','Kids/Home (Christmas crafts)':'Christmas Decor','Home Decor':'Home Decor',Statues:'Home Decor'};
+const KIND_ORDER=[...new Set([...KIND_RULES.map(r=>r[0]),...Object.values(CATKIND),'Other'])];
+function kindOf(p){
+ const hay=(p.name||'')+' '+(p.cat||'');
+ for(let i=0;i<KIND_RULES.length;i++){if(KIND_RULES[i][1].test(hay))return KIND_RULES[i][0];}
+ if(CATKIND[p.cat])return CATKIND[p.cat];
+ return 'Other';
+}
+function kindRank(p){const i=KIND_ORDER.indexOf(kindOf(p));return i<0?KIND_ORDER.length:i;}
+function byKind(a,b){const d=kindRank(a)-kindRank(b);return d!==0?d:a.name.localeCompare(b.name);}
+function byDeptKind(a,b){const d=DEPTS.indexOf(a.dept)-DEPTS.indexOf(b.dept);return d!==0?d:byKind(a,b);}
 // One checkout for every product: the Buy button asks the site's checkout
 // function for a Stripe payment page for that item.
 function startCheckout(btn){
@@ -108,11 +173,37 @@ function startCheckout(btn){
 function card(p){
  const isCJ = p.source==='CJ Dropshipping';
  const img = p.has_pic?`<img src="${esc(p.img)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:`<div class="nopic">Picture on the supplier page &mdash; review before live</div>`;
- const priceLine = `<div class="pr">$${esc(p.price)}${p.was_price?` <i>&mdash; was $${esc(p.was_price)}</i>`:''}</div>`;
+ // Size/style chart: each size or style with its own plain price — never a
+ // range. The shopper picks one; Buy charges the picked price. For a plus-
+ // size chart the main price is the flat S–XL price and nothing is picked
+ // until she taps a plus size; for a full chart the first row is picked.
+ const hasChart = Array.isArray(p.size_chart) && p.size_chart.length>0;
+ const defaultFirst = hasChart && p.chart_default!=='flat';
+ const buyPrice = defaultFirst ? p.size_chart[0].price : p.price;
+ const buyName = defaultFirst ? (p.name+' — '+p.size_chart[0].size) : p.name;
+ const priceLine = `<div class="pr"><span class="amt">$${esc(buyPrice)}</span>${(!hasChart&&p.was_price)?` <i>&mdash; was $${esc(p.was_price)}</i>`:''}</div>`;
+ const chartHtml = hasChart
+   ? `<div class="chartlbl">${esc(p.chart_label||'Choose a size:')}</div><div class="chart">${p.size_chart.map((e,i)=>`<button type="button" class="${(defaultFirst&&i===0)?'on':''}" data-price="${esc(e.price)}" data-fullname="${esc(p.name+' — '+e.size)}" onclick="pickSize(this)">${esc(e.size)} &mdash; $${esc(e.price)}</button>`).join('')}</div>`
+   : '';
  const wh = p.us_warehouse ? 'US warehouse' : (p.warehouse ? esc(p.warehouse) : 'Warehouse to verify');
  const metaLine = isCJ
    ? `<div class="meta">${esc(p.dept)} &middot; ${esc(p.cat)} &middot; CJ Dropshipping &middot; ${wh} &middot; ${esc(p.sku)}</div>`
    : `<div class="meta">${esc(p.dept)} &middot; ${esc(p.cat)} &middot; ${esc(p.source||'The Crystal Camellia')} &middot; ${esc(p.sku)}</div>`;
- return `<div class="card">${img}<div class="nm">${esc(p.name)}</div>${priceLine}${metaLine}<button data-buy data-name="${esc(p.name)}" data-price="${esc(p.price)}" data-sku="${esc(p.sku||'')}">Buy</button></div>`;
+ return `<div class="card">${img}<div class="nm">${esc(p.name)}</div>${priceLine}${chartHtml}${metaLine}<button data-buy data-base-name="${esc(p.name)}" data-name="${esc(buyName)}" data-price="${esc(buyPrice)}" data-sku="${esc(p.sku||'')}">Buy</button></div>`;
+}
+// Picking a size/style on a chart card: highlight it, show its price, and
+// point the Buy button at that size's price and name.
+function pickSize(el){
+ const cardEl=el.closest('.card'); if(!cardEl) return;
+ const btns=cardEl.querySelectorAll('.chart button');
+ for(let i=0;i<btns.length;i++) btns[i].classList.remove('on');
+ el.classList.add('on');
+ const buy=cardEl.querySelector('[data-buy]');
+ const amt=cardEl.querySelector('.amt');
+ if(buy){
+  buy.setAttribute('data-price', el.getAttribute('data-price'));
+  buy.setAttribute('data-name', el.getAttribute('data-fullname')||buy.getAttribute('data-base-name')||'');
+ }
+ if(amt) amt.textContent='$'+el.getAttribute('data-price');
 }
 </script></body></html>
